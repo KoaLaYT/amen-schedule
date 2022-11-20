@@ -17,15 +17,15 @@
             </div>
         </div>
     </div>
-    <ams-loading-vue v-if="isFetching" />
 </template>
 
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { nextTick, onMounted, ref, computed } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useLessonStore } from '../stores/lesson';
 import AmsDayVue from '../components/AmsDay.vue';
-import AmsLoadingVue from "./AmsLoading.vue";
+import { Toast } from 'vant';
+import 'vant/es/toast/style';
 
 const hours = Array.from({ length: 15 }).map((_, index) => {
     const hour = index + 9
@@ -37,10 +37,20 @@ const hours = Array.from({ length: 15 }).map((_, index) => {
 })
 
 const store = useLessonStore()
-const dates = ref([] as string[]);
+const dates = ref(Array.from({ length: 10 }).map((_, index) => dayjs().add(index - 5, 'day').format('YYYY-MM-DD')));
 const isUpdating = ref(false)
 const datesEle = ref(null)
-const isFetching = computed(() => store.isFetching.length > 0)
+watch(() => store.isFetching.length, (length) => {
+    if (length > 0) {
+        Toast.loading({
+            message: "Loading...",
+            forbidClick: true,
+            duration: 0
+        })
+    } else {
+        Toast.clear()
+    }
+})
 
 const onScroll = (params: any) => {
     const scrollLeft: number = params.target.scrollLeft;
@@ -70,11 +80,9 @@ const onScroll = (params: any) => {
 
 // 初始化时获取当天前后5天的数据，并且显示当前日期
 onMounted(() => {
-    const today = dayjs()
-    dates.value = Array.from({ length: 10 }).map((_, index) => today.add(index - 5, 'day').format('YYYY-MM-DD'));
     store.fetchLessons([dates.value[0], dates.value[dates.value.length - 1]])
     nextTick(() => {
-        document.getElementById(today.format('YYYY-MM-DD'))?.scrollIntoView()
+        document.getElementById(dayjs().format('YYYY-MM-DD'))?.scrollIntoView()
     })
 })
 
@@ -108,13 +116,20 @@ function showWeekday(date: string) {
     &__dates {
         display: flex;
         flex-flow: row nowrap;
-        margin-left: 4rem;
+        padding-left: 4rem;
         width: calc(100% - 4rem);
         flex: 0 0 3rem;
         overflow-x: hidden;
+        background-color: var(--van-primary-color);
+
+        &::before {
+            content: ' ';
+            height: 3rem;
+            width: 4rem;
+        }
 
         >div {
-            color: var(--weui-FG-0);
+            color: var(--van-gray-3);
             padding-top: 0.5rem;
             padding-left: 1px;
             flex: 0 0 200px;
@@ -132,23 +147,25 @@ function showWeekday(date: string) {
 
         &__hours {
             height: calc(15 * 8rem);
-            border-right: 1px solid var(--weui-BG-0);
+            border-right: 1px solid var(--van-border-color);
             text-align: center;
 
             >div {
+                color: var(--van-gray-7);
                 height: 8rem;
                 width: 4rem;
                 position: relative;
                 display: flex;
                 flex-flow: row nowrap;
                 align-items: center;
+                justify-content: center;
             }
 
             &__line {
                 position: absolute;
-                left: 3.5rem;
+                left: 3.6rem;
                 width: calc(100vw - 4rem);
-                border-top: 1px solid var(--weui-BG-0);
+                border-top: 1px solid var(--van-border-color);
                 z-index: -1;
             }
         }

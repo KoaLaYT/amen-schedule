@@ -1,4 +1,5 @@
-body {
+:root {
     box-sizing: border-box;
-    color: var(--weui-FG-1)
+
+    --van-primary-color: #f598f0;
 }

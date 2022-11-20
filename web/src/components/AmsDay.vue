@@ -1,15 +1,21 @@
 <template>
-    <div class="ams-day">
-        <div class="ams-day__lesson" v-for="lesson in lessons" :key="lesson.lessonId" :style="{ ...calOffset(lesson) }">
+    <div class="ams-day" @click="onDayClick($event)">
+        <div class="ams-day__lesson" v-for="lesson in lessons" :key="lesson.lessonId" :style="{ ...calOffset(lesson) }"
+            @click.stop.prevent="onLessonClick(lesson)">
             <div>{{ lesson.studentName }}</div>
             <div>{{ lesson.startAt }} - {{ lesson.endAt }}</div>
         </div>
+        <van-popup v-model:show="editorShow">
+            <ams-edit-lesson-vue />
+        </van-popup>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from '@vue/reactivity';
+import { Toast } from 'vant';
+import { computed, ref } from 'vue';
 import { Lesson, useLessonStore } from '../stores/lesson';
+import AmsEditLessonVue from './AmsEditLesson.vue';
 
 const props = defineProps<{
     date: string,
@@ -18,6 +24,7 @@ const props = defineProps<{
 const store = useLessonStore();
 
 const lessons = computed(() => store.$state.lessons.get(props.date) ?? [])
+const editorShow = ref(false)
 
 const calOffset = (lesson: Lesson) => {
     const [startHour, startMin] = lesson.startAt.split(":").map(Number);
@@ -36,6 +43,15 @@ const calOffset = (lesson: Lesson) => {
     }
 }
 
+const onDayClick = (event: MouseEvent) => {
+    console.log(props.date, event)
+    Toast.success("click day")
+}
+
+const onLessonClick = (lesson: Lesson) => {
+    console.log(props.date, lesson)
+    Toast.success("click lesson")
+}
 
 function complementary(color: string) {
     const hex = Number.parseInt(color.slice(1), 16)
@@ -47,7 +63,7 @@ function complementary(color: string) {
 <style scoped lang="scss">
 .ams-day {
     flex: 0 0 200px;
-    border-right: 1px solid var(--weui-BG-0);
+    border-right: 1px solid var(--van-border-color);
     position: relative;
 
     &__lesson {
