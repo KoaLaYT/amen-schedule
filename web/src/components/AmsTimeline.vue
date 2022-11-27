@@ -2,7 +2,7 @@
     <div class="ams-timeline">
         <div class="ams-timeline__dates" ref="datesEle">
             <div v-for="date in dates" :key="date">
-                {{ showWeekday(date) }}
+                {{ FormatUtil.showWeekday(date) }}
             </div>
         </div>
         <div class="ams-timeline__wrapper">
@@ -26,14 +26,10 @@ import { useLessonStore } from '../stores/lesson';
 import AmsDayVue from '../components/AmsDay.vue';
 import { Toast } from 'vant';
 import 'vant/es/toast/style';
+import { FormatUtil } from "../utils/format.util";
 
 const hours = Array.from({ length: 15 }).map((_, index) => {
-    const hour = index + 9
-    if (hour < 10) {
-        return `0${hour}:00`
-    } else {
-        return `${hour}:00`
-    }
+    return `${FormatUtil.padZero(index + 9)}:00`
 })
 
 const store = useLessonStore()
@@ -80,7 +76,9 @@ const onScroll = (params: any) => {
 
 // 初始化时获取当天前后5天的数据，并且显示当前日期
 onMounted(() => {
-    store.fetchLessons([dates.value[0], dates.value[dates.value.length - 1]])
+    if (!store.$state.fetched) {
+        store.fetchLessons([dates.value[0], dates.value[dates.value.length - 1]])
+    }
     nextTick(() => {
         document.getElementById(dayjs().format('YYYY-MM-DD'))?.scrollIntoView()
     })
@@ -97,11 +95,6 @@ function addMoreDatesAfter() {
     const newDates = Array.from({ length: 7 }).map((_, index) => dayjs(firstDate).add(index + 1, 'day').format('YYYY-MM-DD'))
     store.fetchLessons([newDates[0], newDates[newDates.length - 1]])
     dates.value.push(...newDates)
-}
-
-const translate = ['日', '一', '二', '三', '四', '五', '六']
-function showWeekday(date: string) {
-    return `${date} 周${translate[dayjs(date).day()]}`
 }
 </script>
 

@@ -1,20 +1,21 @@
 <template>
-    <div class="ams-day" @click="onDayClick($event)">
+    <div class="ams-day" @click.self="onDayClick($event)">
         <div class="ams-day__lesson" v-for="lesson in lessons" :key="lesson.lessonId" :style="{ ...calOffset(lesson) }"
             @click.stop.prevent="onLessonClick(lesson)">
             <div>{{ lesson.studentName }}</div>
             <div>{{ lesson.startAt }} - {{ lesson.endAt }}</div>
         </div>
-        <van-popup v-model:show="editorShow">
-            <ams-edit-lesson-vue />
+        <van-popup v-model:show="editorShow" round position="bottom" :style="{ height: '40%' }">
+            <ams-edit-lesson-vue :visible="editorShow" :lesson="editLesson" :date="editLessonDate"
+                @submit="editorShow = false" />
         </van-popup>
     </div>
 </template>
 
 <script setup lang="ts">
-import { Toast } from 'vant';
-import { computed, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { Lesson, useLessonStore } from '../stores/lesson';
+import { FormatUtil } from '../utils/format.util';
 import AmsEditLessonVue from './AmsEditLesson.vue';
 
 const props = defineProps<{
@@ -24,6 +25,16 @@ const props = defineProps<{
 const store = useLessonStore();
 
 const lessons = computed(() => store.$state.lessons.get(props.date) ?? [])
+
+const editLesson = reactive({
+    lessonId: 0,
+    studentId: 0,
+    studentName: '',
+    startAt: '',
+    endAt: '',
+    fee: 0,
+})
+const editLessonDate = ref('')
 const editorShow = ref(false)
 
 const calOffset = (lesson: Lesson) => {
@@ -43,19 +54,69 @@ const calOffset = (lesson: Lesson) => {
     }
 }
 
-const onDayClick = (event: MouseEvent) => {
-    console.log(props.date, event)
-    Toast.success("click day")
+const onDayClick = (event: MouseEvent & { layerY?: number }) => {
+    editLessonDate.value = props.date
+    editLesson.lessonId = 0
+    editLesson.studentId = 0
+    editLesson.studentName = ''
+    editLesson.startAt = calStartAtBaseOnClick(event.layerY)
+    editLesson.endAt = ''
+    editLesson.fee = 0
+    editorShow.value = true;
 }
 
 const onLessonClick = (lesson: Lesson) => {
-    console.log(props.date, lesson)
-    Toast.success("click lesson")
+    editLessonDate.value = props.date
+    editLesson.lessonId = lesson.lessonId
+    editLesson.studentId = lesson.studentId
+    editLesson.studentName = lesson.studentName
+    editLesson.startAt = lesson.startAt
+    editLesson.endAt = lesson.endAt
+    editLesson.fee = lesson.fee
+    editorShow.value = true;
 }
 
-function complementary(color: string) {
+function complementary(color: string = '#FFFFFF') {
     const hex = Number.parseInt(color.slice(1), 16)
     return '#' + (0xFFFFFF - hex).toString(16)
+}
+
+function calStartAtBaseOnClick(layerY: number = 0) {
+    const totalHours = 15;
+    const rem = 8;
+    const remToPixel = 16;
+    const startHour = 8;
+    const startMin = 30;
+
+    const offsetY = layerY / (totalHours * rem * remToPixel)
+    const offsetMin = Math.floor(offsetY * totalHours * 60)
+
+    let calHour = startHour + Math.floor((startMin + offsetMin) / 60);
+    let calMin = (startMin + offsetMin) % 60
+
+    calMin = calMinToQuarter(calMin);
+    if (calMin < 0) {
+        calHour += 1;
+        calMin = 0;
+    }
+
+    return `${FormatUtil.padZero(calHour)}:${FormatUtil.padZero(calMin)}`
+}
+
+function calMinToQuarter(min: number) {
+    if (min < 8) {
+        return 0;
+    }
+    if (min < 23) {
+        return 15;
+    }
+    if (min < 38) {
+        return 30;
+    }
+    if (min < 53) {
+        return 45;
+    }
+    return -1;
 }
 
 </script>
