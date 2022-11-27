@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router"
 
 interface Tabbar {
@@ -43,6 +43,10 @@ const tabbars: Tabbar[] = [
     iconActivate: "/student_activate.png"
   }
 ]
+
+onMounted(() => {
+  router.push(route.path)
+})
 
 const onClick = (tabbar: Tabbar) => {
   if (tabbar.path == route.path) return

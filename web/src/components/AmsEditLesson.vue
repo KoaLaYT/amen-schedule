@@ -12,14 +12,14 @@
                 <van-field v-model="lesson.startAt" is-link readonly name="startAt" label="开始时间"
                     @click="pickerShow.startAt = true" />
                 <van-popup v-model:show="pickerShow.startAt" round position="bottom" :style="{ height: '40%' }">
-                    <van-datetime-picker type="time" title="开始时间" :filter="filterStartTime" @confirm="onStartAtConfirm"
-                        @cancel="pickerShow.startAt = false" />
+                    <van-datetime-picker :model-value="lesson.startAt" type="time" title="开始时间"
+                        :filter="filterStartTime" @confirm="onStartAtConfirm" @cancel="pickerShow.startAt = false" />
                 </van-popup>
                 <van-field v-model="lesson.endAt" is-link readonly name="endAt" label="结束时间"
                     @click="pickerShow.endAt = true" />
                 <van-popup v-model:show="pickerShow.endAt" round position="bottom" :style="{ height: '40%' }">
-                    <van-datetime-picker type="time" title="结束时间" :filter="filterEndTime" @confirm="onEndAtConfirm"
-                        @cancel="pickerShow.endAt = false" />
+                    <van-datetime-picker :model-value="lesson.endAt" type="time" title="结束时间" :filter="filterEndTime"
+                        @confirm="onEndAtConfirm" @cancel="pickerShow.endAt = false" />
                 </van-popup>
                 <van-field v-model="lesson.fee" type="number" name="fee" label="课时费" />
             </van-cell-group>
@@ -72,7 +72,9 @@ const title = computed(() => {
 const students = computed(() => studentStore.$state.students)
 
 onMounted(() => {
-    studentStore.fetchStudents()
+    if (!studentStore.fetched) {
+        studentStore.fetchStudents()
+    }
     initLesson()
 })
 
@@ -122,13 +124,13 @@ const onStudentIdConfirm = (student: Student) => {
 
 const onStartAtConfirm = (value: string) => {
     lesson.startAt = value;
-    lesson.endAt = defaultDuration(value, 45);
+    lesson.endAt = lesson.endAt || defaultDuration(value, 45);
     pickerShow.startAt = false
 }
 
 const onEndAtConfirm = (value: string) => {
     lesson.endAt = value;
-    lesson.startAt = defaultDuration(value, -45);
+    lesson.startAt = lesson.startAt || defaultDuration(value, -45);
     pickerShow.endAt = false
 }
 

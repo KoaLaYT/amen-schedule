@@ -49,8 +49,8 @@ const calOffset = (lesson: Lesson) => {
         height: `${durationMin}rem`,
         left: 0,
         right: '1rem',
-        "background-color": lesson.studentColor,
-        color: complementary(lesson.studentColor)
+        color: lesson.studentFgColor,
+        "background-color": lesson.studentBgColor,
     }
 }
 
@@ -74,11 +74,6 @@ const onLessonClick = (lesson: Lesson) => {
     editLesson.endAt = lesson.endAt
     editLesson.fee = lesson.fee
     editorShow.value = true;
-}
-
-function complementary(color: string = '#FFFFFF') {
-    const hex = Number.parseInt(color.slice(1), 16)
-    return '#' + (0xFFFFFF - hex).toString(16)
 }
 
 function calStartAtBaseOnClick(layerY: number = 0) {
