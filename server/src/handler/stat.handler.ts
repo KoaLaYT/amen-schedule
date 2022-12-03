@@ -2,6 +2,7 @@ import { AppContext, AppError } from "../type/common";
 import { ValidateUtil } from "../util/validate.util";
 
 const SELECT_LESSON_FIELDS = {
+    id: true,
     taughtDate: true,
     startTime: true,
     endTime: true,

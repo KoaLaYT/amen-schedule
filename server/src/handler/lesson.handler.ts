@@ -2,7 +2,6 @@ import { AppContext, AppError } from "../type/common";
 import { ValidateUtil } from "../util/validate.util";
 
 interface CreateLessonDto {
-    id: number,
     studentId: number;
     taughtDate: string;
     startTime: string;
