@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Student {
+  id              BigInt    @id @default(autoincrement()) @db.BigInt
+  name            String    @db.VarChar(128)
+  lessonDuration  Int // default lesson duration in minutes
+  lessonFee       Int // default lesson fee in Chinese Yuan
+  fontColor       String    @db.Char(7) // color like #FFEEDD
+  backgroundColor String    @db.Char(7)
+  createdAt       DateTime  @default(now())
+  updateAt        DateTime  @updatedAt
+  deleteAt        DateTime?
+}
+
+model Lesson {
+  id         BigInt   @id @default(autoincrement()) @db.BigInt
+  studentId  BigInt   @db.BigInt
+  taughtDate String   @db.Char(10) // date string YYYY-MM-DD
+  startTime  String   @db.Char(5) // time string HH:mm
+  endTime    String   @db.Char(5)
+  fee        Int
+  createdAt  DateTime @default(now())
+  updateAt   DateTime @updatedAt
+
+  @@index([studentId, taughtDate])
+  @@index([taughtDate])
+}
