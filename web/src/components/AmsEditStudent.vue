@@ -21,6 +21,7 @@
 import { Notify } from 'vant';
 import { computed, onMounted, reactive, watch } from 'vue';
 import { Student, useStudentStore } from '../stores/student';
+import { CommonUtil } from '../utils/common.util';
 
 const props = defineProps<{ visible: boolean; student: Student }>()
 
@@ -59,7 +60,8 @@ const studentStore = useStudentStore()
 const emit = defineEmits(['submit'])
 
 const onSubmit = () => {
-    console.log({ ...student })
+    CommonUtil.log({ ...student })
+
     if (!checkFormValidity()) return
 
     if (student.id > 0) {

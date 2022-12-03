@@ -24,8 +24,18 @@
 
 <script setup lang="ts">
 import { Toast } from 'vant';
-import { computed, defineProps, reactive, ref } from 'vue';
+import { computed, defineProps, ref } from 'vue';
+import { StatApi, StatVo } from '../api/stat.api';
 import { Student } from '../stores/student';
+import { CommonUtil } from '../utils/common.util';
+import { FormatUtil } from '../utils/format.util';
+
+interface Stat {
+    lessonId: number;
+    weekday: string;
+    time: string;
+    fee: number;
+}
 
 const props = defineProps<{ student: Student }>();
 
@@ -36,27 +46,48 @@ const labelStyle = computed(() => ({
 
 const editorShow = ref(false)
 
-const stats = ref([] as { lessonId: number; weekday: string; time: string; fee: number }[])
+const stats = ref([] as Stat[])
 const title = ref('')
 
-const onStatSubmit = (range: { start: string; end: string }) => {
+const onStatSubmit = async (range: { start: string; end: string }) => {
     editorShow.value = false
-    console.log(range)
-    // TODO fetch stats
     title.value = `${range.start} ~ ${range.end}`
-    fakeFetchStat()
+
+
+    const statVos = await fetchStat([range.start, range.end])
+    const result = []
+    let totalFee = 0
+
+    for (const statVo of statVos) {
+        result.push(convert(statVo))
+        totalFee += statVo.fee
+    }
+
+    result.push(<Stat>{
+        lessonId: 0,
+        weekday: '总计',
+        time: '',
+        fee: totalFee
+    })
+
+    stats.value = result
 }
 
-function fakeFetchStat() {
+function convert(vo: StatVo) {
+    return <Stat>{
+        lessonId: vo.id,
+        weekday: FormatUtil.showWeekday(vo.taughtDate),
+        time: `${vo.startTime}-${vo.endTime}`,
+        fee: vo.fee
+    }
+}
+
+async function fetchStat(dateRange: [string, string]) {
     Toast.loading({ message: 'Loading...', forbidClick: true, duration: 0 })
-    setTimeout(() => {
-        stats.value = [
-            { lessonId: 1, weekday: '2022-10-01 周三', time: '10:00-11:15', fee: 200 },
-            { lessonId: 1, weekday: '2022-10-02 周四', time: '10:00-11:15', fee: 200 },
-            { lessonId: 0, weekday: '总计', time: '', fee: 400 },
-        ]
-        Toast.clear()
-    }, 500)
+    const result = await StatApi.summary(props.student.id, dateRange)
+    CommonUtil.log(result)
+    Toast.clear()
+    return result
 }
 
 

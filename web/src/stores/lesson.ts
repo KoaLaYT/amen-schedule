@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia'
+import { LessonApi, LessonVo } from '../api/lesson.api';
+import { CommonUtil } from '../utils/common.util';
+import { Student } from './student';
 
 export interface Lesson {
     lessonId: number;
@@ -22,64 +25,83 @@ export const useLessonStore = defineStore('lesson', {
     actions: {
         async fetchLessons(dateRange: [string, string]) {
             this.$state.isFetching.push(1)
-            console.log(`fetch lessons for ${dateRange}, isFetching ${this.isFetching.length}`)
-            // TODO use real API
-            await new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    resolve('')
-                }, 499);
-            });
+            CommonUtil.log(`fetch lessons for ${dateRange}, isFetching ${this.isFetching.length}`)
+
+            const lessons = await LessonApi.summary(dateRange)
+            const students = await getOrFetchStudents()
+            const groupByDateLessons: Map<string, LessonVo[]> = groupByDate(lessons)
+
+            for (const date of groupByDateLessons.keys()) {
+                const lessonsAtDate = groupByDateLessons.get(date) ?? []
+                this.$state.lessons.set(date, lessonsAtDate.map(it => convert(it, students)))
+            }
+
             this.$state.isFetching.pop()
             this.$state.fetched = true;
-            console.log(this.$state.lessons, this.$state.isFetching.length)
+            CommonUtil.log(this.$state.lessons, this.$state.isFetching.length)
         },
 
         async createLesson(date: string, lesson: Lesson) {
             this.$state.isUpdating = true
-            const previousLessons = this.$state.lessons.get(date) ?? [];
-            const newLessons = await fakeCreateLesson(date, lesson, previousLessons);
-            this.$state.lessons.set(date, newLessons);
+            const previousLessons = this.$state.lessons.get(date) ?? []
+            const created = await LessonApi.create(date, lesson)
+            if (created) {
+                const students = await getOrFetchStudents()
+                previousLessons.push(convert(created, students))
+                this.$state.lessons.set(date, [...previousLessons]);
+            }
             this.$state.isUpdating = false;
         },
 
         async updateLesson(date: string, lesson: Lesson) {
             this.$state.isUpdating = true
             const previousLessons = this.$state.lessons.get(date) ?? [];
-            const newLessons = await fakeUpdateLesson(date, lesson, previousLessons);
-            this.$state.lessons.set(date, newLessons);
+            const updated = await LessonApi.update(date, lesson)
+            if (updated) {
+                const students = await getOrFetchStudents()
+                for (let i = 0; i < previousLessons.length; i++) {
+                    if (previousLessons[i].lessonId == lesson.lessonId) {
+                        previousLessons.splice(i, 1, convert(updated, students))
+                    }
+                }
+                this.$state.lessons.set(date, [...previousLessons]);
+            }
             this.$state.isUpdating = false;
         }
     }
 })
 
-
-async function fakeCreateLesson(date: string, lesson: Lesson, lessons: Lesson[]): Promise<Lesson[]> {
-    const { useStudentStore } = await import("./student")
-    return new Promise(resolve => {
-        // TODO for test
-        const studentStore = useStudentStore()
-        const student = studentStore.students.find(it => it.id == lesson.studentId)
-        const createdLesson = {
-            ...lesson,
-            lessonId: Date.now(),
-            studentFgColor: student?.fgColor,
-            studentBgColor: student?.bgColor
+function groupByDate(lessons: LessonVo[]) {
+    const map = new Map()
+    for (const lesson of lessons) {
+        if (!map.has(lesson.taughtDate)) {
+            map.set(lesson.taughtDate, [])
         }
-        lessons.push(createdLesson)
-        setTimeout(() => resolve(lessons), 500)
-    })
+        map.get(lesson.taughtDate).push(lesson)
+    }
+    return map
 }
 
-async function fakeUpdateLesson(date: string, lesson: Lesson, lessons: Lesson[]): Promise<Lesson[]> {
-    return new Promise(resolve => {
-        const oldLesson = lessons.filter(it => it.lessonId == lesson.lessonId)[0]
-        const createdLesson = {
-            ...lesson,
-            studentFgColor: oldLesson?.studentFgColor,
-            studentBgColor: oldLesson?.studentBgColor
-        }
-        lessons = lessons.filter(it => it.lessonId != lesson.lessonId)
-        lessons.push(createdLesson)
-        setTimeout(() => resolve(lessons), 500)
-    })
+async function getOrFetchStudents() {
+    const { useStudentStore } = await import("./student")
+    const studentStore = useStudentStore()
+    if (!studentStore.fetched) {
+        await studentStore.fetchStudents()
+    }
+    return studentStore.students
+}
+
+function convert(lessonVo: LessonVo, students: Student[]) {
+    const student = students.find(it => it.id == lessonVo.studentId)
+
+    return <Lesson>{
+        lessonId: lessonVo.id,
+        studentId: student?.id,
+        studentName: student?.name,
+        studentFgColor: student?.fgColor,
+        studentBgColor: student?.bgColor,
+        startAt: lessonVo.startTime,
+        endAt: lessonVo.endTime,
+        fee: lessonVo.fee
+    }
 }
