@@ -9,7 +9,7 @@ interface CommonResponse<T> {
 
 export class RestApi {
 
-    static baseUrl = !CommonUtil.isDev()
+    static baseUrl = CommonUtil.isDev()
         ? `http://localhost:3000` : 'http://47.100.225.7:3000'
 
     static async get<T>(path: string): Promise<T | undefined> {

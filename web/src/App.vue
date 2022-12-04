@@ -40,7 +40,7 @@ const tabbars: Tabbar[] = [
     path: "/student",
     name: "孩儿",
     iconDeactivate: "./student_deactivate.png",
-    iconActivate: "/student_activate.png"
+    iconActivate: "./student_activate.png"
   }
 ]
 
