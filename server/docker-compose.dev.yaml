@@ -1,0 +1,29 @@
+version: "3.9"
+name: amen-schedule
+services:
+  server:
+    build: .
+    networks:
+      - amen-schedule
+    volumes:
+      - .:/home/node/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    command: npm run dev
+
+  mysql:
+    image: "mysql:8.0.31"
+    networks:
+      - amen-schedule
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=amen_schedule
+
+networks:
+  amen-schedule:
+volumes:
+  mysql-data:

@@ -1,0 +1,28 @@
+version: "3.9"
+name: amen-schedule
+services:
+  server:
+    image: "koalayt/amen-schedule-api:latest"
+    networks:
+      - amen-schedule
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: "mysql:8.0.31"
+    networks:
+      - amen-schedule
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=amen_schedule
+      - MYSQL_USER=amen
+      - MYSQL_PASSWORD=amen
+
+networks:
+  amen-schedule:
+volumes:
+  mysql-data:
