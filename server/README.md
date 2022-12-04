@@ -13,8 +13,10 @@ docker compose -f docker-compose.dev.yaml up
 ```bash
 # build image
 docker build -t koalayt/amen-schedule-api:latest -t koalayt/amen-schedule-api:1.0.0 .
+docker build -t koalayt/amen-schedule-nginx:latest -t koalayt/amen-schedule-nginx:1.0.0 ./nginx
 # push to docker hub
-docker push koalayt/amen-schedule-api:latest
+docker push -a koalayt/amen-schedule-api
+docker push -a koalayt/amen-schedule-nginx
 ```
 
 ## Push to remote server

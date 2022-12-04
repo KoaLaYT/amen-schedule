@@ -1,12 +1,19 @@
 version: "3.9"
 name: amen-schedule
 services:
+  nginx:
+    image: "koalayt/amen-schedule-nginx:latest"
+    networks:
+      - amen-schedule
+    ports:
+      - 80:80
+    depends_on:
+      - server
+
   server:
     image: "koalayt/amen-schedule-api:latest"
     networks:
       - amen-schedule
-    ports:
-      - "3000:3000"
     depends_on:
       - mysql
 
