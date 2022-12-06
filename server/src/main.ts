@@ -28,7 +28,9 @@ app.use(helmet.contentSecurityPolicy({
     }
 }))
 
-// app.use(cors()) // use nginx
+if (config.isDev) {
+    app.use(cors()) // prod will use nginx
+}
 
 app.use(errorHandler())
 

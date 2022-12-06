@@ -11,7 +11,7 @@ services:
       - server
 
   server:
-    image: "koalayt/amen-schedule-api:1.0.3"
+    image: "koalayt/amen-schedule-api:1.0.4"
     networks:
       - amen-schedule
     depends_on:

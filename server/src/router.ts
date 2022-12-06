@@ -13,6 +13,7 @@ const router = new Router()
     .get("/lesson/summary", LessonHandler.summary)
     .post("/lesson", LessonHandler.create)
     .put("/lesson/:id", LessonHandler.update)
+    .delete("/lesson/:id", LessonHandler.delete)
     // stats
     .get("/stat/:id", StatHandler.summary)
     .all(/.*/, () => { throw new AppError(5001, "no such methods") })

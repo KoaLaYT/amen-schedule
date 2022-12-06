@@ -79,8 +79,16 @@ export class LessonHandler {
         })
     }
 
-}
+    /**
+     * delete a lesson.
+     */
+    static async delete(ctx: AppContext) {
+        const lessonId = +(ctx.params.id) || 0
+        if (lessonId <= 0) AppError.throwBadParams(`Invalid lessonId ${ctx.params.id}`)
 
-function checkDateValidity(startDate: string, endDate: string) {
-    throw new Error("Function not implemented.");
+        console.log(`lessonId: ${lessonId}`)
+
+        await ctx.prisma.lesson.delete({ where: { id: lessonId } })
+    }
+
 }
