@@ -28,7 +28,7 @@ app.use(helmet.contentSecurityPolicy({
     }
 }))
 
-app.use(cors())
+// app.use(cors()) // use nginx
 
 app.use(errorHandler())
 

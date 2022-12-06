@@ -27,3 +27,7 @@ ssh amen-alivps
 cd /home
 docker compose up -d
 ```
+
+## TODO
+
+- use github action to build images / deploy web pages

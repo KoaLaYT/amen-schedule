@@ -4,7 +4,7 @@
   "description": "Rest api for amen schedule",
   "main": "dist/main.js",
   "scripts": {
-    "build": "rm -rf dist && prisma generate && tsc",
+    "build": "prisma generate && tsc",
     "dev": "./wait-for-it.sh mysql:3306 -- prisma migrate dev && NODE_ENV=development nodemon --ignore test/ --watch src -e ts --exec ts-node src/main.ts",
     "start": "./wait-for-it.sh mysql:3306 -- prisma migrate deploy && node dist/main.js"
   },

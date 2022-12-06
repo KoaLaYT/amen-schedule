@@ -2,7 +2,7 @@ version: "3.9"
 name: amen-schedule
 services:
   nginx:
-    image: "koalayt/amen-schedule-nginx:latest"
+    image: "koalayt/amen-schedule-nginx:1.0.3"
     networks:
       - amen-schedule
     ports:
@@ -11,7 +11,7 @@ services:
       - server
 
   server:
-    image: "koalayt/amen-schedule-api:latest"
+    image: "koalayt/amen-schedule-api:1.0.3"
     networks:
       - amen-schedule
     depends_on:
