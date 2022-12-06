@@ -27,6 +27,10 @@
                 <van-button round block type="primary" native-type="submit" :loading="lessonStore.isUpdating">
                     确认
                 </van-button>
+                <van-button v-if="(lesson.lessonId > 0)" round block type="danger" :loading="lessonStore.isUpdating"
+                    @click="onDelete">
+                    删除
+                </van-button>
             </div>
         </van-form>
     </div>
@@ -34,13 +38,15 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, watch } from 'vue';
-import { Notify } from 'vant';
-import 'vant/es/notify/style';
+import { Notify, Dialog } from 'vant';
+import 'vant/es/notify/style'
+import 'vant/es/dialog/style'
 import { Student, useStudentStore } from "../stores/student";
 import { Lesson, useLessonStore } from '../stores/lesson';
 import { FormatUtil } from "../utils/format.util";
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween'
+import { CommonUtil } from '../utils/common.util';
 dayjs.extend(isBetween)
 
 const props = defineProps<{ visible: boolean; lesson: Lesson; date: string }>()
@@ -154,10 +160,23 @@ function defaultDuration(time: string, duration: number) {
     return `${FormatUtil.padZero(hour)}:${FormatUtil.padZero(min)}`
 }
 
-const emit = defineEmits(['submit'])
+const onDelete = () => {
+    Dialog.confirm({ title: '删课？', message: 'Are you sure???' })
+        .then(() => {
+            if (lesson.lessonId > 0) {
+                lessonStore.deleteLesson(props.date, lesson.lessonId)
+            }
+            emit('delete')
+        })
+        .catch(() => {
+            // on cancel do nothing
+        })
+}
+
+const emit = defineEmits(['submit', 'delete'])
 
 const onSubmit = () => {
-    console.log(props.date, { ...lesson })
+    CommonUtil.log(props.date, { ...lesson })
 
     if (!checkFormValidity()) return
     if (!checkLessonConflict()) return
@@ -221,7 +240,18 @@ function hasConflict(oldLesson: Lesson) {
     }
 
     &__btn {
+        display: flex;
+        flex-flow: row nowrap;
         margin: 1rem;
+
+        .van-button--primary {
+            flex: 3;
+        }
+
+        .van-button--danger {
+            margin-left: 1rem;
+            flex: 1;
+        }
     }
 }
 </style>

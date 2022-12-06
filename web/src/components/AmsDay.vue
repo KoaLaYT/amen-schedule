@@ -7,7 +7,7 @@
         </div>
         <van-popup v-model:show="editorShow" round position="bottom" :style="{ height: '40%' }">
             <ams-edit-lesson-vue :visible="editorShow" :lesson="editLesson" :date="editLessonDate"
-                @submit="editorShow = false" />
+                @submit="editorShow = false" @delete="editorShow = false" />
         </van-popup>
     </div>
 </template>

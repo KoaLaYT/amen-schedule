@@ -44,4 +44,10 @@ export class LessonApi {
             fee: Number(lesson.fee)
         })
     }
+    /**
+     * 删除课程.
+     */
+    static async delete(lessonId: number) {
+        await RestApi.delete(`/lesson/${lessonId}`)
+    }
 }

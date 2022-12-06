@@ -67,6 +67,14 @@ export const useLessonStore = defineStore('lesson', {
                 this.$state.lessons.set(date, [...previousLessons]);
             }
             this.$state.isUpdating = false;
+        },
+
+        async deleteLesson(date: string, lessonId: number) {
+            this.$state.isUpdating = true
+            const previousLessons = this.$state.lessons.get(date) ?? [];
+            await LessonApi.delete(lessonId)
+            this.$state.lessons.set(date, previousLessons.filter(it => it.lessonId != lessonId))
+            this.$state.isUpdating = false
         }
     }
 })

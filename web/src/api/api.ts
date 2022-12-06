@@ -36,6 +36,12 @@ export class RestApi {
         })
     }
 
+    static async delete(path: string): Promise<void> {
+        await this.safeFetch(path, {
+            method: 'DELETE',
+        })
+    }
+
     private static async safeFetch<T>(path: RequestInfo | URL, options?: RequestInit): Promise<T | undefined> {
         try {
             const response = await fetch(`${this.baseUrl}${path}`, options)
