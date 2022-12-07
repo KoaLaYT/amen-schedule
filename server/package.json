@@ -5,8 +5,8 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "prisma generate && tsc",
-    "dev": "./wait-for-it.sh mysql:3306 -- prisma migrate dev && NODE_ENV=development nodemon --ignore test/ --watch src -e ts --exec ts-node src/main.ts",
-    "start": "./wait-for-it.sh mysql:3306 -- prisma migrate deploy && node dist/main.js"
+    "dev": "NODE_ENV=development ./wait-for-it.sh postgres:5432 -- nodemon --ignore test/ --watch src -e ts --exec ts-node src/main.ts",
+    "start": "./wait-for-it.sh postgres:5432 -- prisma migrate deploy && node dist/main.js"
   },
   "author": "",
   "license": "ISC",

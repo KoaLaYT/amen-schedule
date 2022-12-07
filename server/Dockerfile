@@ -14,9 +14,6 @@ RUN npm install
 # so only src / config will be included
 COPY --chown=node:node . .
 
-# use prod env settings
-RUN mv .env.prod .env && chown node:node .env
-
 RUN npm run build
 
 EXPOSE 3000

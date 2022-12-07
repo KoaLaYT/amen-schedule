@@ -10,20 +10,21 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mysql
+      - postgres
     command: npm run dev
 
-  mysql:
-    image: "mysql:8.0.31"
+  postgres:
+    image: "postgres:15.1"
     networks:
       - amen-schedule
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=amen_schedule
+      - POSTGRES_USER=amen
+      - POSTGRES_PASSWORD=amen
+      - POSTGRES_DB=amen_schedule
 
 networks:
   amen-schedule:
 volumes:
-  mysql-data:
+  postgres-data:
