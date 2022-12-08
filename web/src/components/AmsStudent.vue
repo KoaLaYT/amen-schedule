@@ -3,7 +3,7 @@
         <div class="ams-student__header">
             <div class="ams-student__header__label" :style="labelStyle">{{ props.student.name }}</div>
             <van-button type="primary" icon="edit" square size="small" @click="$emit('edit')" />
-            <van-button type="success" icon="balance-o" square size="small" @click="editorShow = true" />
+            <van-button type="warning" icon="balance-o" square size="small" @click="editorShow = true" />
             <van-button type="danger" icon="delete-o" square size="small" />
         </div>
         <van-cell-group v-if="stats.length > 0" :title="title" inset :border="false">

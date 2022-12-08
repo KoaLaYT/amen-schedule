@@ -7,8 +7,8 @@
       <van-tabbar-item v-for="tabbar in tabbars" :key="tabbar.path" :name="tabbar.name" @click="onClick(tabbar)">
         <span>{{ tabbar.name }}</span>
         <template #icon>
-          <img v-if="route.path == tabbar.path" :src="tabbar.iconActivate" class="weui-tabbar__icon">
-          <img v-else :src="tabbar.iconDeactivate" class="weui-tabbar__icon">
+          <img v-if="route.path == tabbar.path" :src="tabbar.iconActivate">
+          <img v-else :src="tabbar.iconDeactivate">
         </template>
       </van-tabbar-item>
     </van-tabbar>
@@ -61,11 +61,16 @@ const onClick = (tabbar: Tabbar) => {
   max-height: 100vh;
 
   &__view {
-    height: calc(100vh - 50px);
+    height: calc(100vh - 64px);
     overflow-y: scroll;
   }
 
+  img {
+    height: 32px;
+  }
+
   .van-tabbar {
+    --van-tabbar-height: 64px;
     --van-tabbar-item-active-background-color: var(--van-primary-color);
     --van-tabbar-item-active-color: var(--van-gray-3);
     --van-tabbar-item-text-color: var(--van-primary-color);

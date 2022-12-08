@@ -1,5 +1,7 @@
 :root {
     box-sizing: border-box;
 
-    --van-primary-color: #f598f0;
+    --van-primary-color: #9c6fe8;
+    --van-warning-color: #faab0c;
+    --van-danger-color: #ed6666;
 }
