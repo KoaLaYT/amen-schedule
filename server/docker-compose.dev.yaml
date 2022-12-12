@@ -3,8 +3,6 @@ name: amen-schedule
 services:
   server:
     build: .
-    networks:
-      - amen-schedule
     volumes:
       - .:/home/node/app
     ports:
@@ -15,16 +13,12 @@ services:
 
   postgres:
     image: "postgres:15.1"
-    networks:
-      - amen-schedule
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data-dev:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=amen
       - POSTGRES_PASSWORD=amen
       - POSTGRES_DB=amen_schedule
 
-networks:
-  amen-schedule:
 volumes:
-  postgres-data:
+  postgres-data-dev:
