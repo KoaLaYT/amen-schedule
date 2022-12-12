@@ -41,7 +41,7 @@ const editorShow = ref(false)
 
 const calOffset = (lesson: Lesson) => {
     const [startHour, startMin] = lesson.startAt.split(":").map(Number);
-    const startOffset = (startHour + startMin / 60 - 9) * 8 + 4
+    const startOffset = (startHour + startMin / 60 - 10) * 8 + 4
 
     const [endHour, endMin] = lesson.endAt.split(":").map(Number);
     const durationMin = ((endHour - startHour) * 60 + (endMin - startMin)) / 60 * 8;
@@ -81,10 +81,10 @@ const onLessonClick = (lesson: Lesson) => {
 }
 
 function calStartAtBaseOnClick(layerY: number = 0) {
-    const totalHours = 15;
+    const totalHours = 13;
     const rem = 8;
     const remToPixel = 16;
-    const startHour = 8;
+    const startHour = 9;
     const startMin = 30;
 
     const offsetY = layerY / (totalHours * rem * remToPixel)
