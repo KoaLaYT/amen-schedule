@@ -5,3 +5,8 @@
     --van-warning-color: #faab0c;
     --van-danger-color: #ed6666;
 }
+
+body {
+    width: 100%;
+    height: 100%;
+}

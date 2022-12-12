@@ -3,7 +3,7 @@
     <transition name="van-fade">
       <router-view class="ams-app__view" />
     </transition>
-    <van-tabbar class="ams-app__tab" v-model="active">
+    <van-tabbar class="ams-app__tab" :fixed="false" v-model="active">
       <van-tabbar-item v-for="tabbar in tabbars" :key="tabbar.path" :name="tabbar.name" @click="onClick(tabbar)">
         <span>{{ tabbar.name }}</span>
         <template #icon>
@@ -57,8 +57,8 @@ const onClick = (tabbar: Tabbar) => {
 
 <style scoped lang="scss">
 .ams-app {
-  min-height: 100vh;
-  max-height: 100vh;
+  width: 100%;
+  height: 100%;
 
   &__view {
     height: calc(100vh - 64px);

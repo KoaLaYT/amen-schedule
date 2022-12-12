@@ -12,8 +12,14 @@
                     <div class="ams-timeline__wrapper__hours__line"></div>
                 </div>
             </div>
-            <div class="ams-timeline__wrapper__days" @scroll="onScroll($event)">
+            <div class="ams-timeline__wrapper__days" @scroll="onScroll($event)" ref="daysEle">
                 <ams-day-vue v-for="date in dates" :key="date" :date="date" :id="date" />
+            </div>
+            <div class="ams-timeline__wrapper__arrow-left  ams-timeline__wrapper__arrow" @click="onLeftArrow">
+                <van-icon name="arrow-left" />
+            </div>
+            <div class="ams-timeline__wrapper__arrow-right  ams-timeline__wrapper__arrow" @click="onRightArrow">
+                <van-icon name="arrow" />
             </div>
         </div>
     </div>
@@ -28,14 +34,16 @@ import { Toast } from 'vant';
 import 'vant/es/toast/style';
 import { FormatUtil } from "../utils/format.util";
 
-const hours = Array.from({ length: 15 }).map((_, index) => {
-    return `${FormatUtil.padZero(index + 9)}:00`
+const hours = Array.from({ length: 13 }).map((_, index) => {
+    return `${FormatUtil.padZero(index + 10)}:00`
 })
 
 const store = useLessonStore()
 const dates = ref(Array.from({ length: 10 }).map((_, index) => dayjs().add(index - 5, 'day').format('YYYY-MM-DD')));
 const isUpdating = ref(false)
 const datesEle = ref(null)
+const daysEle = ref(null)
+
 watch(() => store.isFetching.length, (length) => {
     if (length > 0) {
         Toast.loading({
@@ -63,7 +71,7 @@ const onScroll = (params: any) => {
         nextTick(() => {
             const newMax = params.target.scrollWidth - params.target.clientWidth - scrollLeftMax;
             params.target.scrollLeft = newMax;
-            (datesEle.value as any).scollLeft = newMax;
+            (datesEle.value as any).scrollLeft = newMax;
         })
 
     } else if (scrollLeftMax - scrollLeft <= 10) {
@@ -72,6 +80,20 @@ const onScroll = (params: any) => {
         addMoreDatesAfter();
         setTimeout(() => isUpdating.value = false, 200)
     }
+}
+
+const onLeftArrow = () => {
+    (daysEle.value as any).scrollBy({
+        left: -400,
+        behavior: 'smooth'
+    })
+}
+
+const onRightArrow = () => {
+    (daysEle.value as any).scrollBy({
+        left: +400,
+        behavior: 'smooth'
+    })
 }
 
 // 初始化时获取当天前后5天的数据，并且显示当前日期
@@ -100,7 +122,7 @@ function addMoreDatesAfter() {
 
 <style scoped lang="scss">
 .ams-timeline {
-    width: 100vw;
+    width: 100%;
     height: 100%;
     display: flex;
     flex-flow: column nowrap;
@@ -137,9 +159,43 @@ function addMoreDatesAfter() {
         display: flex;
         flex-flow: row nowrap;
         overflow-y: scroll;
+        position: relative;
+
+        &__arrow {
+            position: fixed;
+            top: 3rem;
+            width: 4rem;
+            height: calc(100vh - 3rem - 64px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            >i {
+                display: none;
+            }
+
+            &:hover {
+                background: rgba(240, 240, 240, 0.6);
+                backdrop-filter: blur(2px);
+                cursor: pointer;
+
+                >i {
+                    display: block;
+                }
+            }
+
+        }
+
+        &__arrow-left {
+            left: 4rem
+        }
+
+        &__arrow-right {
+            right: 0;
+        }
 
         &__hours {
-            height: calc(15 * 8rem);
+            height: calc(13 * 8rem);
             border-right: 1px solid var(--van-border-color);
             text-align: center;
 
@@ -165,12 +221,22 @@ function addMoreDatesAfter() {
 
         &__days {
             width: 100%;
-            height: calc(15 * 8rem);
+            height: calc(13 * 8rem);
             display: flex;
             flex-flow: row nowrap;
             overflow: scroll;
         }
     }
 
+}
+
+@media (max-width: 480px) {
+    .ams-timeline {
+        &__wrapper {
+            &__arrow {
+                display: none;
+            }
+        }
+    }
 }
 </style>
