@@ -28,6 +28,19 @@ cd /home
 docker compose up -d
 ```
 
+## Let's encrypt with docker
+
+This [tutorial](https://www.programonaut.com/setup-ssl-with-docker-nginx-and-lets-encrypt/) walk through a full configuration.
+
+[MDN](https://ssl-config.mozilla.org/#server=nginx&version=1.17.7&config=modern&openssl=1.1.1k&ocsp=false&guideline=5.6) has a generator for ssl configs.
+
+```bash
+docker run -it --rm --name certbot \
+    -v "/home/certbot/conf:/etc/letsencrypt" \
+    -v "/home/certbot/www:/var/www/certbot"
+    certbot/certbot certonly
+```
+
 ## TODO
 
 - use github action to build images / deploy web pages

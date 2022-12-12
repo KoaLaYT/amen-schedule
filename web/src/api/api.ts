@@ -10,7 +10,7 @@ interface CommonResponse<T> {
 export class RestApi {
 
     static baseUrl = CommonUtil.isDev()
-        ? `http://localhost:3000` : 'http://api.upnqhl.top/api'
+        ? `http://localhost:3000` : 'https://api.upnqhl.top/api'
 
     static async get<T>(path: string): Promise<T | undefined> {
         return this.safeFetch(path)
