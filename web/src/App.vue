@@ -1,23 +1,29 @@
 <template>
   <div class="ams-app">
-    <transition name="van-fade">
-      <router-view class="ams-app__view" />
-    </transition>
-    <van-tabbar class="ams-app__tab" :fixed="false" v-model="active">
-      <van-tabbar-item v-for="tabbar in tabbars" :key="tabbar.path" :name="tabbar.name" @click="onClick(tabbar)">
-        <span>{{ tabbar.name }}</span>
-        <template #icon>
-          <img v-if="route.path == tabbar.path" :src="tabbar.iconActivate">
-          <img v-else :src="tabbar.iconDeactivate">
-        </template>
-      </van-tabbar-item>
-    </van-tabbar>
+    <template v-if="!userStore.hasToken">
+      <router-view name="login" class="ams-app__login" />
+    </template>
+    <template v-else>
+      <transition name="van-fade">
+        <router-view class="ams-app__view" />
+      </transition>
+      <van-tabbar class="ams-app__tab" :model-value="active">
+        <van-tabbar-item v-for="tabbar in tabbars" :key="tabbar.path" :name="tabbar.name" :to="tabbar.path">
+          <span>{{ tabbar.name }}</span>
+          <template #icon>
+            <img v-if="route.path == tabbar.path" :src="tabbar.iconActivate">
+            <img v-else :src="tabbar.iconDeactivate">
+          </template>
+        </van-tabbar-item>
+      </van-tabbar>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useRouter, useRoute } from "vue-router"
+import { computed } from "vue";
+import { useRoute } from "vue-router"
+import { useUserStore } from "./stores/user";
 
 interface Tabbar {
   path: string;
@@ -25,9 +31,10 @@ interface Tabbar {
   iconDeactivate: string;
   iconActivate: string;
 }
-const router = useRouter()
+
 const route = useRoute()
-const active = ref('课儿')
+const active = computed(() => tabbars.find(tab => tab.path == route.fullPath)?.name)
+const userStore = useUserStore()
 
 const tabbars: Tabbar[] = [
   {
@@ -44,21 +51,17 @@ const tabbars: Tabbar[] = [
   }
 ]
 
-onMounted(() => {
-  router.push(route.path)
-})
-
-const onClick = (tabbar: Tabbar) => {
-  if (tabbar.path == route.path) return
-  router.push({ path: tabbar.path })
-}
-
 </script>
 
 <style scoped lang="scss">
 .ams-app {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+
+  &__login {
+    width: 100%;
+    height: 100%;
+  }
 
   &__view {
     height: calc(100vh - 64px);
@@ -80,5 +83,6 @@ const onClick = (tabbar: Tabbar) => {
       border: none;
     }
   }
+
 }
 </style>

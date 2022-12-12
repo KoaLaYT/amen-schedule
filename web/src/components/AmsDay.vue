@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 import { Lesson, useLessonStore } from '../stores/lesson';
+import { useUserStore } from '../stores/user';
 import { FormatUtil } from '../utils/format.util';
 import AmsEditLessonVue from './AmsEditLesson.vue';
 
@@ -22,7 +23,8 @@ const props = defineProps<{
     date: string,
 }>()
 
-const store = useLessonStore();
+const store = useLessonStore()
+const userStore = useUserStore()
 
 const lessons = computed(() => store.$state.lessons.get(props.date) ?? [])
 
@@ -55,6 +57,7 @@ const calOffset = (lesson: Lesson) => {
 }
 
 const onDayClick = (event: MouseEvent & { layerY?: number }) => {
+    if (!userStore.isAdmin) return
     editLessonDate.value = props.date
     editLesson.lessonId = 0
     editLesson.studentId = 0
@@ -66,6 +69,7 @@ const onDayClick = (event: MouseEvent & { layerY?: number }) => {
 }
 
 const onLessonClick = (lesson: Lesson) => {
+    if (!userStore.isAdmin) return
     editLessonDate.value = props.date
     editLesson.lessonId = lesson.lessonId
     editLesson.studentId = lesson.studentId

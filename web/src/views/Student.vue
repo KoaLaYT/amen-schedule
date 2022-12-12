@@ -1,13 +1,14 @@
 <template>
     <div class="view-student">
         <div class="view-student__header">
-            <van-button type="primary" icon="plus" plain square @click="onCreateStudent" />
+            <van-button v-if="userStore.isAdmin" type="primary" icon="plus" plain square @click="onCreateStudent" />
             <div>孩儿们</div>
+            <van-button type="primary" icon="./paw-icon.png" @click="onChangeRole" />
         </div>
         <van-pull-refresh :model-value="loading" @refresh="onLoad">
             <van-collapse v-model="activeNames">
                 <van-collapse-item v-for="student in students" :key="student.id" :name="student.id"
-                    :title="student.name">
+                    :title="student.name" :disabled="!userStore.isAdmin">
                     <ams-student :student="student" @edit="onEditStudent(student)" />
                 </van-collapse-item>
             </van-collapse>
@@ -24,9 +25,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { Student, useStudentStore } from '../stores/student';
+import { useUserStore } from '../stores/user';
 
 const studentStore = useStudentStore()
+const userStore = useUserStore()
+const router = useRouter()
 
 const students = computed(() => studentStore.students)
 const activeNames = ref([])
@@ -63,11 +68,18 @@ const onEditStudent = (student: Student) => {
     editorShow.value = true
 }
 
+const onChangeRole = () => {
+    userStore.clear()
+    router.push("/login")
+}
+
 </script>
 
 <style lang="scss">
 .view-student {
     &__header {
+        --van-button-icon-size: 2rem;
+
         display: flex;
         height: 3rem;
         background-color: var(--van-primary-color);
