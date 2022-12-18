@@ -1,9 +1,10 @@
 <template>
     <div class="view-student">
         <div class="view-student__header">
-            <van-button v-if="userStore.isAdmin" type="primary" icon="plus" plain square @click="onCreateStudent" />
+            <van-button v-if="userStore.isAdmin" type="primary" icon="plus" @click="actionShow = true" />
             <div>孩儿们</div>
-            <van-button type="primary" icon="./paw-icon.png" @click="onChangeRole" />
+            <van-button class="view-student__header__logout" type="primary" icon="./paw-icon.png"
+                @click="onChangeRole" />
         </div>
         <van-pull-refresh :model-value="loading" @refresh="onLoad">
             <van-collapse v-model="activeNames">
@@ -17,6 +18,7 @@
         <a class="view-student__footer" href="https://www.flaticon.com/" title="icons">
             Icons are created by Freepik - Flaticon
         </a>
+        <van-share-sheet v-model:show="actionShow" title="你想怎样" :options="options" @select="onSelect" />
         <van-popup v-model:show="editorShow" round position="bottom" :style="{ height: '45%' }">
             <ams-edit-student :visible="editorShow" :student="editorStudent" @submit="editorShow = false" />
         </van-popup>
@@ -24,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import { Toast } from 'vant';
+import 'vant/es/toast/style'
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Student, useStudentStore } from '../stores/student';
@@ -44,6 +48,35 @@ onMounted(() => {
         studentStore.fetchStudents()
     }
 })
+
+interface Option {
+    name: string
+    icon: string
+    id: number
+}
+
+const actionShow = ref(false)
+const options: Option[] = [
+    { name: '加孩', icon: './action_add.png', id: 1 },
+    { name: '复制', icon: './action_copy.png', id: 2 },
+    { name: '算账', icon: './action_money.png', id: 3 },
+]
+
+const onSelect = (option: Option) => {
+    switch (option.id) {
+        case 1:
+            onCreateStudent()
+            break
+        case 2:
+            Toast('可以啊')
+            break
+        case 3:
+            Toast('可以啊')
+            break
+        default:
+    }
+    actionShow.value = false
+}
 
 const editorShow = ref(false)
 const editorStudent = reactive({} as Student)
@@ -80,8 +113,6 @@ const onChangeRole = () => {
 <style lang="scss">
 .view-student {
     &__header {
-        --van-button-icon-size: 2rem;
-
         display: flex;
         height: 3rem;
         background-color: var(--van-primary-color);
@@ -93,6 +124,14 @@ const onChangeRole = () => {
             flex: 1;
             text-align: center;
         }
+
+        &__logout {
+            --van-button-icon-size: 2rem;
+        }
+    }
+
+    &__ctl {
+        display: flex;
     }
 
     &__footer {
