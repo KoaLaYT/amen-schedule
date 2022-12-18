@@ -12,6 +12,7 @@ export interface Lesson {
     startAt: string;
     endAt: string;
     fee: number;
+    duration: number;
 }
 
 
@@ -110,6 +111,7 @@ function convert(lessonVo: LessonVo, students: Student[]) {
         studentBgColor: student?.bgColor,
         startAt: lessonVo.startTime,
         endAt: lessonVo.endTime,
-        fee: lessonVo.fee
+        fee: lessonVo.fee,
+        duration: student?.duration
     }
 }

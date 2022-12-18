@@ -61,6 +61,7 @@ const lesson = reactive({
     startAt: '',
     endAt: '',
     fee: 0,
+    duration: 45
 })
 
 const pickerShow = reactive({
@@ -95,8 +96,9 @@ function initLesson() {
     lesson.studentId = props.lesson.studentId ?? 0
     lesson.studentName = props.lesson.studentName ?? ''
     lesson.startAt = props.lesson.startAt ?? ''
-    lesson.endAt = props.lesson.endAt || (defaultDuration(props.lesson.startAt, 45))
+    lesson.endAt = defaultDuration(props.lesson.startAt, props.lesson.duration)
     lesson.fee = props.lesson.fee ?? 0
+    lesson.duration = props.lesson.duration
 }
 
 const filterStartTime = (type: string, options: string[]) => {
@@ -125,18 +127,22 @@ const onStudentIdConfirm = (student: Student) => {
     lesson.studentId = student.id;
     lesson.studentName = student.name;
     lesson.fee = student.fee;
+    lesson.duration = student.duration
+    if (lesson.startAt) {
+        lesson.endAt = defaultDuration(lesson.startAt, student.duration)
+    }
     pickerShow.studentName = false
+    CommonUtil.log(lesson)
 };
 
 const onStartAtConfirm = (value: string) => {
     lesson.startAt = value;
-    lesson.endAt = lesson.endAt || defaultDuration(value, 45);
+    lesson.endAt = defaultDuration(value, lesson.duration);
     pickerShow.startAt = false
 }
 
 const onEndAtConfirm = (value: string) => {
     lesson.endAt = value;
-    lesson.startAt = lesson.startAt || defaultDuration(value, -45);
     pickerShow.endAt = false
 }
 

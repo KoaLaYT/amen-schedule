@@ -7,6 +7,7 @@
                 <van-field v-model="student.fee" type="number" name="fee" label="课时费" />
                 <van-field v-model="student.fgColor" type="color" name="fgColor" label="字色" />
                 <van-field v-model="student.bgColor" type="color" name="bgColor" label="底色" />
+                <van-field v-model="student.duration" type="number" name="duration" label="时长" />
             </van-cell-group>
             <div class="ams-edit-student__btn">
                 <van-button round block type="primary" native-type="submit" :loading="studentStore.isUpdating">
@@ -30,15 +31,18 @@ const student = reactive({
     name: '',
     fee: 0,
     fgColor: '',
-    bgColor: ''
+    bgColor: '',
+    duration: 45,
 });
 
 const initStudent = () => {
+    CommonUtil.log(props.student)
     student.id = props.student.id ?? 0
     student.name = props.student.name ?? ''
     student.fee = props.student.fee ?? 0
     student.fgColor = props.student.fgColor || '#000000'
     student.bgColor = props.student.bgColor || '#DDDDDD'
+    student.duration = props.student.duration || 45
 }
 
 const title = computed(() => {

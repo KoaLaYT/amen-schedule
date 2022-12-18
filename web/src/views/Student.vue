@@ -54,6 +54,7 @@ const onCreateStudent = () => {
     editorStudent.fee = 0
     editorStudent.fgColor = ''
     editorStudent.bgColor = ''
+    editorStudent.duration = 0
 
     editorShow.value = true
 }
@@ -64,6 +65,7 @@ const onEditStudent = (student: Student) => {
     editorStudent.fee = student.fee
     editorStudent.fgColor = student.fgColor
     editorStudent.bgColor = student.bgColor
+    editorStudent.duration = student.duration
 
     editorShow.value = true
 }

@@ -9,6 +9,7 @@ export interface Student {
     fee: number;
     bgColor: string;
     fgColor: string;
+    duration: number;
 }
 
 const lessonStore = useLessonStore()

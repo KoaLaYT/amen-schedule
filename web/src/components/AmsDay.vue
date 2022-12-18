@@ -35,6 +35,7 @@ const editLesson = reactive({
     startAt: '',
     endAt: '',
     fee: 0,
+    duration: 45
 })
 const editLessonDate = ref('')
 const editorShow = ref(false)
@@ -65,6 +66,7 @@ const onDayClick = (event: MouseEvent & { layerY?: number }) => {
     editLesson.startAt = calStartAtBaseOnClick(event.layerY)
     editLesson.endAt = ''
     editLesson.fee = 0
+    editLesson.duration = 45
     editorShow.value = true;
 }
 
@@ -77,6 +79,7 @@ const onLessonClick = (lesson: Lesson) => {
     editLesson.startAt = lesson.startAt
     editLesson.endAt = lesson.endAt
     editLesson.fee = lesson.fee
+    editLesson.duration = lesson.duration
     editorShow.value = true;
 }
 

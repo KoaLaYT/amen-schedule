@@ -33,7 +33,7 @@ export class StudentApi {
     static async create(dto: Student) {
         const result: StudentVo | undefined = await RestApi.post("/student", <StudentDto>{
             name: dto.name,
-            lessonDuration: 45, // TODO
+            lessonDuration: Number(dto.duration),
             lessonFee: Number(dto.fee),
             fontColor: dto.fgColor,
             backgroundColor: dto.bgColor
@@ -47,7 +47,7 @@ export class StudentApi {
     static async update(dto: Student) {
         const result: StudentVo | undefined = await RestApi.put(`/student/${dto.id}`, <StudentDto>{
             name: dto.name,
-            lessonDuration: 45, // TODO
+            lessonDuration: Number(dto.duration),
             lessonFee: Number(dto.fee),
             fontColor: dto.fgColor,
             backgroundColor: dto.bgColor
@@ -66,6 +66,7 @@ function convert(vo?: StudentVo) {
         name: vo.name,
         fee: vo.lessonFee,
         fgColor: vo.fontColor,
-        bgColor: vo.backgroundColor
+        bgColor: vo.backgroundColor,
+        duration: vo.lessonDuration
     }
 }
