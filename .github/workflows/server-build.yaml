@@ -18,43 +18,13 @@ on:
         required: false
         type: boolean
         default: false
+
 jobs:
-  build-server:
-    if: ${{ inputs.buildServer || github.event.workflow_run.conclusion == 'success' }}
+  gen-tag:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
     steps:
-      -
-        name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
-        name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-api:latest
-          context: "{{ defaultContext }}:server"
-  build-nginx:
-    if: ${{ inputs.buildNginx || github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - 
         name: Gen current date
         id: date
@@ -67,11 +37,63 @@ jobs:
         name: Gen tag
         id: tag
         run: echo "tag=${{ steps.date.outputs.date }}-${{ steps.commit.outputs.commit }}" >> $GITHUB_OUTPUT
+  build-server:
+    if: ${{ inputs.buildServer || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    needs: gen-tag
+    steps:
+      -
+        name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - 
         name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:${{ steps.tag.outputs.tag }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-api:${{ needs.gen-tag.outputs.tag }}
+          context: "{{ defaultContext }}:server"
+  build-nginx:
+    if: ${{ inputs.buildNginx || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    needs: gen-tag
+    steps:
+      -
+        name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:${{ needs.gen-tag.outputs.tag }}
           context: "{{ defaultContext }}:server/nginx"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [gen-tag, build-server, build-nginx]
+    steps:
+      -
+        name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SERVER_PEM }}
+          known_hosts: unnecessary
+      - 
+        name: Adding known hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      - uses: actions/checkout@v3
+      -
+        name: Deploy
+        run: sh ./.github/scripts/server-deploy.sh ./server/docker-compose.template.yaml ${{ needs.gen-tag.outputs.tag }} ${{ secrets.SERVER_HOST }}
 
