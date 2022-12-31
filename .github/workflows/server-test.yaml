@@ -2,10 +2,10 @@ name: server test CI
 
 on:
   push:
-    # paths: "server/**"
+    paths: "server/**"
     branches: [ master ]
   pull_request:
-    # paths: "server/**"
+    paths: "server/**"
     branches: [ master ]
   workflow_dispatch:
 

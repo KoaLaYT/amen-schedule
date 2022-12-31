@@ -2,7 +2,7 @@ version: "3.9"
 name: amen-schedule
 services:
   nginx:
-    image: "koalayt/amen-schedule-nginx:1.0.9"
+    image: "koalayt/amen-schedule-nginx:{{ NGINX_TAG }}"
     networks:
       - amen-schedule
     ports:
@@ -16,7 +16,7 @@ services:
     restart: always
 
   server:
-    image: "koalayt/amen-schedule-api:1.1.2"
+    image: "koalayt/amen-schedule-api:{{ SERVER_TAG }}"
     networks:
       - amen-schedule
     depends_on:

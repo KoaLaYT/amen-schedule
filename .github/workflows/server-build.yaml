@@ -7,14 +7,40 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      buildServer:
+        description: 'build server image'
+        required: false
+        type: boolean
+        default: false
+      buildNginx:
+        description: 'build nginx image'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
+  gen-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - 
+        name: Gen current date
+        id: date
+        run: echo "date=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+      -
+        name: Gen short commit sha
+        id: commit
+        run: echo "commit=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      - 
+        name: Gen tag
+        id: tag
+        run: echo "tag=${{ steps.date.outputs.date }}-${{ steps.commit.outputs.commit }}" >> $GITHUB_OUTPUT
   build-server:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ inputs.buildServer || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
+    needs: gen-tag
     steps:
       -
         name: Setup Docker Buildx
@@ -30,13 +56,12 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-api:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-api:${{ needs.gen-tag.outputs.tag }}
+          context: "{{ defaultContext }}:server"
   build-nginx:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ inputs.buildNginx || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
+    needs: gen-tag
     steps:
       -
         name: Setup Docker Buildx
@@ -52,6 +77,23 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:latest
-          context: "./nginx"
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:${{ needs.gen-tag.outputs.tag }}
+          context: "{{ defaultContext }}:server/nginx"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [gen-tag, build-server, build-nginx]
+    steps:
+      -
+        name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SERVER_PEM }}
+          known_hosts: unnecessary
+      - 
+        name: Adding known hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      - uses: actions/checkout@v3
+      -
+        name: Deploy
+        run: sh ./.github/scripts/server-deploy.sh ./server/docker-compose.template.yaml ${{ needs.gen-tag.outputs.tag }} ${{ secrets.SERVER_HOST }}
 
