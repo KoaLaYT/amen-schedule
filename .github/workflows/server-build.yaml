@@ -8,15 +8,19 @@ on:
       - completed
   workflow_dispatch:
     inputs:
-      forceBuild:
-        description: 'force build images'
+      buildServer:
+        description: 'build server image'
         required: false
         type: boolean
         default: false
-
+      buildNginx:
+        description: 'build nginx image'
+        required: false
+        type: boolean
+        default: false
 jobs:
   build-server:
-    if: ${{ inputs.forceBuild || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ inputs.buildServer || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,11 +43,8 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-api:latest
           context: "{{ defaultContext }}:server"
   build-nginx:
-    if: ${{ inputs.forceBuild || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ inputs.buildNginx || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
     steps:
       -
         name: Setup Docker Buildx
@@ -55,10 +56,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - 
+        name: Gen current date
+        id: date
+        run: echo "date=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+      -
+        name: Gen short commit sha
+        id: commit
+        run: echo "commit=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      - 
+        name: Gen tag
+        id: tag
+        run: echo "tag=${{ steps.date.outputs.date }}-${{ steps.commit.outputs.commit }}" >> $GITHUB_OUTPUT
+      - 
         name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:${{ steps.tag.outputs.tag }}
           context: "{{ defaultContext }}:server/nginx"
 
