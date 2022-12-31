@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AmsCopyLesson: typeof import('./src/components/AmsCopyLesson.vue')['default']
     AmsDay: typeof import('./src/components/AmsDay.vue')['default']
     AmsEditLesson: typeof import('./src/components/AmsEditLesson.vue')['default']
     AmsEditStatDate: typeof import('./src/components/AmsEditStatDate.vue')['default']

@@ -22,6 +22,9 @@
         <van-popup v-model:show="editorShow" round position="bottom" :style="{ height: '45%' }">
             <ams-edit-student :visible="editorShow" :student="editorStudent" @submit="editorShow = false" />
         </van-popup>
+        <van-popup v-model:show="copyShow" round position="bottom" :style="{ height: '45%' }">
+            <ams-copy-lesson :visible="copyShow" @submit="copyShow = false" />
+        </van-popup>
     </div>
 </template>
 
@@ -68,7 +71,7 @@ const onSelect = (option: Option) => {
             onCreateStudent()
             break
         case 2:
-            Toast('可以啊')
+            copyShow.value = true
             break
         case 3:
             Toast('可以啊')
@@ -102,6 +105,8 @@ const onEditStudent = (student: Student) => {
 
     editorShow.value = true
 }
+
+const copyShow = ref(false)
 
 const onChangeRole = () => {
     userStore.clear()
