@@ -2,7 +2,7 @@ import * as VueRouter from "vue-router"
 import { CommonUtil } from "./utils/common.util"
 
 const router = VueRouter.createRouter({
-    history: VueRouter.createWebHistory("/amen-schedule/"),
+    history: VueRouter.createWebHistory(),
     routes: [
         { path: "/", component: () => import("./views/Schedule.vue") },
         { path: "/student", component: () => import("./views/Student.vue") },
