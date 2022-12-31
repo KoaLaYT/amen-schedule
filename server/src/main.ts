@@ -2,18 +2,15 @@ import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import helmet from "koa-helmet";
 import cors from "@koa/cors"
-import { PrismaClient } from "@prisma/client";
 import { config } from "./config";
 import router from "./router";
 import { PrismaAppContext } from "./type/common";
 import { errorHandler } from "./handler/error.handler";
+import prisma from "./prisma";
 
 (BigInt.prototype as any).toJSON = function () { return Number(this.toString()) }
 
 const app = new Koa<{}, PrismaAppContext>()
-const prisma = new PrismaClient({
-    log: config.isDev ? ['query', 'info', 'warn', 'error'] : ['error']
-})
 
 app.context.prisma = prisma
 
