@@ -40,7 +40,3 @@ docker run -it --rm --name certbot \
     -v "/home/certbot/www:/var/www/certbot"
     certbot/certbot certonly
 ```
-
-## TODO
-
-- use github action to build images / deploy web pages
