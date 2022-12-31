@@ -7,10 +7,16 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      forceBuild:
+        description: 'force build images'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-server:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ inputs.forceBuild || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,8 +37,9 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-api:latest
+          context: "{{ defaultContext }}:server"
   build-nginx:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ inputs.forceBuild || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,5 +60,5 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/amen-schedule-nginx:latest
-          context: "./nginx"
+          context: "{{ defaultContext }}:server/nginx"
 
