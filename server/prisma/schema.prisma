@@ -35,3 +35,13 @@ model Lesson {
   @@index([studentId, taughtDate])
   @@index([taughtDate])
 }
+
+model User {
+  id        BigInt   @id @default(autoincrement())
+  name      String   @db.Char(64)
+  passwd    String   @db.Char(32) // md5 passwd
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  @@unique([name])
+}
