@@ -39,7 +39,7 @@ const hours = Array.from({ length: 13 }).map((_, index) => {
 })
 
 const store = useLessonStore()
-const dates = ref(Array.from({ length: 10 }).map((_, index) => dayjs().add(index - 5, 'day').format('YYYY-MM-DD')));
+const dates = ref(Array.from({ length: 14 }).map((_, index) => dayjs().add(index - 7, 'day').format('YYYY-MM-DD')));
 const isUpdating = ref(false)
 const datesEle = ref(null)
 const daysEle = ref(null)

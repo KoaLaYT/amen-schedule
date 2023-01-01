@@ -47,8 +47,9 @@ const pickerShow = reactive({
 })
 
 const initRange = () => {
-    range.start = dayjs().format('YYYY-MM-DD')
-    range.end = dayjs().add(7, 'day').format('YYYY-MM-DD')
+    const today = dayjs()
+    range.start = today.startOf('month').format('YYYY-MM-DD')
+    range.end = today.format('YYYY-MM-DD')
 }
 
 const title = computed(() => {

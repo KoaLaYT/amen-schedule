@@ -153,12 +153,12 @@ function defaultDuration(time: string, duration: number) {
 
     let [hour, min] = time.split(":").map(Number)
     min += duration
-    if (min < 0) {
+    while (min < 0) {
         min += 60;
         hour -= 1;
     }
 
-    if (min >= 60) {
+    while (min >= 60) {
         min -= 60;
         hour += 1;
     }
