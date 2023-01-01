@@ -3,7 +3,7 @@
         <img src="/paw.png" />
         <van-button plain @click="showPopup = true">我是阿菛宝宝</van-button>
         <van-button plain @click="onClick('DD')">我不是阿菛宝宝</van-button>
-        <van-popup v-model:show="showPopup" round position="bottom" :style="{ height: '40%' }">
+        <van-popup v-model:show="showPopup" round position="bottom" :style="{ height: '50%' }">
             <div class="login__passwd">
                 <van-password-input :value="passwd" focused :length="5" :gutter="15" />
                 <van-number-keyboard v-model="passwd" :maxlength="5" random-key-order :show="!loading" />
