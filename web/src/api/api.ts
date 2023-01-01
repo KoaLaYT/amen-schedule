@@ -1,5 +1,6 @@
 import { Toast } from "vant"
 import { CommonUtil } from "../utils/common.util";
+import 'vant/es/toast/style';
 
 interface CommonResponse<T> {
     code: number;
