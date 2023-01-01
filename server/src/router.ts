@@ -2,6 +2,7 @@ import Router from "@koa/router"
 import { LessonHandler } from "./handler/lesson.handler"
 import { StatHandler } from "./handler/stat.handler"
 import { StudentHandler } from "./handler/student.handler"
+import { UserHandler } from "./handler/user.handler"
 import { AppError } from "./type/common"
 
 const router = new Router()
@@ -16,6 +17,8 @@ const router = new Router()
     .delete("/lesson/:id", LessonHandler.delete)
     // stats
     .get("/stat/:id", StatHandler.summary)
+    // user
+    .post("/user/login", UserHandler.login)
     .all(/.*/, () => { throw new AppError(5001, "no such methods") })
 
 export default router
