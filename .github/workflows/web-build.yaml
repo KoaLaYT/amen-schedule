@@ -1,0 +1,31 @@
+name: web build CI
+
+on:
+  push:
+    paths: "web/**"
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: npm ci
+      - name: Build web pages
+        run: npm run build
+      - name: Copy 404 page
+        run: cd dist && cp index.html 404.html && cd ..
+      - name: Download aliyun ossutil
+        run: wget https://gosspublic.alicdn.com/ossutil/1.7.14/ossutil64 && chmod 755 ossutil64
+      - name: Config aliyun oss
+        run: ./ossutil64 config --endpoint ${{ secrets.OSSUTIL_ENDPOINT }} --access-key-id ${{ secrets.OSSUTIL_ACCESS_KEY }} --access-key-secret ${{ secrets.OSSUTIL_ACCESS_SECRET }}
+      - name: Sync web page to aliyun oss
+        run: ./ossutil64 sync dist/ oss://amen-schedule --force --update
