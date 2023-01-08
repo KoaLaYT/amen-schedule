@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     AmsEditLesson: typeof import('./src/components/AmsEditLesson.vue')['default']
     AmsEditStatDate: typeof import('./src/components/AmsEditStatDate.vue')['default']
     AmsEditStudent: typeof import('./src/components/AmsEditStudent.vue')['default']
+    AmsMonthFee: typeof import('./src/components/AmsMonthFee.vue')['default']
     AmsStudent: typeof import('./src/components/AmsStudent.vue')['default']
     AmsTimeline: typeof import('./src/components/AmsTimeline.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
