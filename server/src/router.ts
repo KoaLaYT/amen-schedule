@@ -1,9 +1,9 @@
-import Router from "@koa/router"
-import { LessonHandler } from "./handler/lesson.handler"
-import { StatHandler } from "./handler/stat.handler"
-import { StudentHandler } from "./handler/student.handler"
-import { UserHandler } from "./handler/user.handler"
-import { AppError } from "./type/common"
+import Router from "@koa/router";
+import { LessonHandler } from "./handler/lesson.handler";
+import { StatHandler } from "./handler/stat.handler";
+import { StudentHandler } from "./handler/student.handler";
+import { UserHandler } from "./handler/user.handler";
+import { AppError } from "./type/common";
 
 const router = new Router()
     // students
@@ -16,9 +16,12 @@ const router = new Router()
     .put("/lesson/:id", LessonHandler.update)
     .delete("/lesson/:id", LessonHandler.delete)
     // stats
+    .get("/stat/all", StatHandler.all)
     .get("/stat/:id", StatHandler.summary)
     // user
     .post("/user/login", UserHandler.login)
-    .all(/.*/, () => { throw new AppError(5001, "no such methods") })
+    .all(/.*/, () => {
+        throw new AppError(5001, "no such methods");
+    });
 
-export default router
+export default router;
