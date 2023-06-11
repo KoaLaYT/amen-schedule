@@ -127,9 +127,10 @@ export class LessonHandler {
         },
       });
 
+      const diff = DateUtil.diffDayBetween(originDate, targetDate);
       const copies = lessons.map((it) => ({
         studentId: it.studentId,
-        taughtDate: DateUtil.oneWeekAfter(it.taughtDate),
+        taughtDate: DateUtil.dayAfter(it.taughtDate, diff),
         startTime: it.startTime,
         endTime: it.endTime,
         fee: it.fee,
