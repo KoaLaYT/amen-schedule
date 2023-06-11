@@ -1,77 +1,71 @@
 <template>
   <div class="ams-copy-lesson">
     <div class="ams-copy-lesson__title">复制课儿</div>
-    <van-form @submit="onSubmit">
-      <van-cell-group inset>
-        <van-field
-          v-model="copyDates.fromStartDate"
-          is-link
-          readonly
-          name="fromStartDate"
-          label="从开始日期"
-          @click="pickerShow.fromStartDate = true"
+    <van-cell-group inset style="flex: 1">
+      <van-field
+        v-model="copyDates.fromStartDate"
+        is-link
+        readonly
+        name="fromStartDate"
+        label="从开始日期"
+        @click="pickerShow.fromStartDate = true" />
+      <van-popup
+        v-model:show="pickerShow.fromStartDate"
+        round
+        position="bottom"
+        :style="{ height: '45%' }"
+      >
+        <van-datetime-picker
+          :model-value="copyDatesPicker.fromStartDate"
+          type="date"
+          title="从开始日期"
+          @confirm="onFromStartDateConfirm"
+          @cancel="pickerShow.fromStartDate = false"
         />
-        <van-popup
-          v-model:show="pickerShow.fromStartDate"
-          round
-          position="bottom"
-          :style="{ height: '45%' }"
-        >
-          <van-datetime-picker
-            :model-value="copyDatesPicker.fromStartDate"
-            type="date"
-            title="从开始日期"
-            @confirm="onFromStartDateConfirm"
-            @cancel="pickerShow.fromStartDate = false"
-          />
-        </van-popup>
-        <van-field
-          v-model="copyDates.fromEndDate"
-          readonly
-          name="fromEndDate"
-          label="从结束日期"
+      </van-popup>
+      <van-field
+        v-model="copyDates.fromEndDate"
+        readonly
+        name="fromEndDate"
+        label="从结束日期" />
+      <van-field
+        v-model="copyDates.toStartDate"
+        is-link
+        readonly
+        name="toStartDate"
+        label="到开始日期"
+        @click="pickerShow.toStartDate = true" />
+      <van-popup
+        v-model:show="pickerShow.toStartDate"
+        round
+        position="bottom"
+        :style="{ height: '45%' }"
+      >
+        <van-datetime-picker
+          :model-value="copyDatesPicker.toStartDate"
+          type="date"
+          title="到开始日期"
+          @confirm="onToStartDateConfirm"
+          @cancel="pickerShow.toStartDate = false"
         />
-      </van-cell-group>
-      <van-cell-group inset>
-        <van-field
-          v-model="copyDates.toStartDate"
-          is-link
-          readonly
-          name="toStartDate"
-          label="到开始日期"
-          @click="pickerShow.toStartDate = true" />
-        <van-popup
-          v-model:show="pickerShow.toStartDate"
-          round
-          position="bottom"
-          :style="{ height: '45%' }"
-        >
-          <van-datetime-picker
-            :model-value="copyDatesPicker.toStartDate"
-            type="date"
-            title="到开始日期"
-            @confirm="onToStartDateConfirm"
-            @cancel="pickerShow.toStartDate = false"
-          />
-        </van-popup>
-        <van-field
-          v-model="copyDates.toEndDate"
-          readonly
-          name="toEndDate"
-          label="到结束日期"
-      /></van-cell-group>
-      <div class="ams-edit-student__btn">
-        <van-button
-          round
-          block
-          type="primary"
-          @click="onSubmit"
-          :loading="loading"
-        >
-          确认
-        </van-button>
-      </div>
-    </van-form>
+      </van-popup>
+      <van-field
+        v-model="copyDates.toEndDate"
+        readonly
+        name="toEndDate"
+        label="到结束日期"
+    /></van-cell-group>
+    <div class="ams-copy-lesson__btn">
+      <van-button
+        round
+        block
+        type="primary"
+        @click="onSubmit"
+        :loading="loading"
+      >
+        确认
+      </van-button>
+    </div>
   </div>
 </template>
 
@@ -149,11 +143,20 @@ const onSubmit = async () => {
 
 <style scoped lang="scss">
 .ams-copy-lesson {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+
   &__title {
     color: var(--van-primary-color);
     font-size: 1.2rem;
     margin: 1rem auto;
     text-align: center;
+  }
+
+  &__btn {
+    margin: 1rem;
+    justify-self: end;
   }
 }
 </style>
