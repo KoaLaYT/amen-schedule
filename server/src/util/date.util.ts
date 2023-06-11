@@ -4,10 +4,25 @@ export class DateUtil {
   private static FORMAT = "YYYY-MM-DD";
 
   /**
+   * day diff.
+   */
+  static diffDayBetween(from: string, to: string) {
+    const diff = dayjs(to).diff(from, "day");
+    return Math.abs(diff);
+  }
+
+  /**
+   * day after.
+   */
+  static dayAfter(date: string, day: number) {
+    return dayjs(date).add(day, "day").format(this.FORMAT);
+  }
+
+  /**
    * one week after @date
    */
   static oneWeekAfter(date: string) {
-    return dayjs(date).add(1, "week").format(this.FORMAT);
+    return this.dayAfter(date, 7);
   }
 
   /**
