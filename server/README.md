@@ -37,6 +37,6 @@ This [tutorial](https://www.programonaut.com/setup-ssl-with-docker-nginx-and-let
 ```bash
 docker run -it --rm --name certbot \
     -v "/home/certbot/conf:/etc/letsencrypt" \
-    -v "/home/certbot/www:/var/www/certbot"
-    certbot/certbot certonly
+    -v "/home/certbot/www:/var/www/certbot" \
+    certbot/certbot certonly --webroot -w /var/www/certbot --force-renewal --email hytohjen@gmail.com -d api.upnqhl.top --agree-tos
 ```
