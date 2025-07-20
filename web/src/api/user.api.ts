@@ -9,10 +9,11 @@ export class UserApi {
     /**
      * 登陆.
      */
-    static async login(passwd: string) {
-        return await RestApi.post<boolean>('/user/login', <LoginDto>{
-            name: 'amen',
-            passwd
-        })
+    static async login(name: string, passwd: string) {
+        return await RestApi.post<boolean>("/user/login", <LoginDto>{
+            name,
+            passwd,
+        });
     }
 }
+

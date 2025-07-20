@@ -7,7 +7,7 @@
         icon="plus"
         @click="actionShow = true"
       />
-      <div>孩儿们</div>
+          <div>{{ userStore.teacherName }}的孩儿们</div>
       <van-button
         class="view-student__header__logout"
         type="primary"
@@ -79,7 +79,9 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Student, useStudentStore } from "../stores/student";
 import { useUserStore } from "../stores/user";
+import { useLessonStore } from "../stores/lesson";
 
+const lessonStore = useLessonStore();
 const studentStore = useStudentStore();
 const userStore = useUserStore();
 const router = useRouter();
@@ -155,6 +157,8 @@ const monthFeeShow = ref(false);
 
 const onChangeRole = () => {
   userStore.clear();
+  studentStore.clear();
+  lessonStore.clear();
   router.push("/login");
 };
 </script>

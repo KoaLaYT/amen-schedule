@@ -4,9 +4,11 @@
       <router-view name="login" class="ams-app__login" />
     </template>
     <template v-else>
-      <transition name="van-fade">
-        <router-view class="ams-app__view" />
-      </transition>
+      <router-view class="ams-app__view" v-slot="{ Component }">
+          <transition name="van-fade">
+              <component :is="Component" />
+          </transition>
+      </router-view>
       <van-tabbar class="ams-app__tab" :model-value="active">
         <van-tabbar-item v-for="tabbar in tabbars" :key="tabbar.path" :name="tabbar.name" :to="tabbar.path">
           <span>{{ tabbar.name }}</span>
