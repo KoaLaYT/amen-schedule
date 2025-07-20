@@ -7,6 +7,7 @@ import router from "./router";
 import { PrismaAppContext } from "./type/common";
 import { errorHandler } from "./handler/error.handler";
 import prisma from "./prisma";
+import { tokenHander } from "./handler/token.handler";
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this.toString());
@@ -31,7 +32,7 @@ app.use(
       fontSrc: ["'self'", "fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "online.swagger.io", "validator.swagger.io"],
     },
-  })
+  }),
 );
 
 if (config.isDev) {
@@ -39,14 +40,14 @@ if (config.isDev) {
 }
 
 app.use(errorHandler());
-
 app.use(bodyParser());
+app.use(tokenHander());
 
 app.use(router.routes()).use(router.allowedMethods());
 
 const server = app.listen(config.port, () => {
   console.log(
-    `${config.isDev ? "[dev mode] " : ""}Server started at port ${config.port}.`
+    `${config.isDev ? "[dev mode] " : ""}Server started at port ${config.port}.`,
   );
 });
 
@@ -58,8 +59,8 @@ function gracefullyShutdown(signal: NodeJS.Signals) {
   console.log("Closing server.");
   server.close(async () => {
     console.log("Server closed.");
-    console.log("Disconnecting from mysql.");
+    console.log("Disconnecting from db.");
     await prisma.$disconnect();
-    console.log("Disconnected from mysql.");
+    console.log("Disconnected from db.");
   });
 }

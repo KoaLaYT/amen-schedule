@@ -32,6 +32,7 @@ export class LessonHandler {
 
     ctx.body = await ctx.prisma.lesson.findMany({
       where: {
+        teacherId: ctx.teacherId,
         AND: [
           {
             taughtDate: {
@@ -58,7 +59,10 @@ export class LessonHandler {
     console.log(`receive dto: `, dto);
 
     ctx.body = await ctx.prisma.lesson.create({
-      data: dto,
+      data: {
+        ...dto,
+        teacherId: ctx.teacherId,
+      },
       select: SELECT_LESSON_FIELDS,
     });
   }
@@ -107,6 +111,7 @@ export class LessonHandler {
     await ctx.prisma.$transaction(async (tx) => {
       await tx.lesson.deleteMany({
         where: {
+          teacherId: ctx.teacherId,
           AND: [
             { taughtDate: { gte: targetDate } },
             {
@@ -120,6 +125,7 @@ export class LessonHandler {
 
       const lessons = await tx.lesson.findMany({
         where: {
+          teacherId: ctx.teacherId,
           AND: [
             { taughtDate: { gte: originDate } },
             { taughtDate: { lt: DateUtil.oneWeekAfter(originDate) } },
@@ -129,6 +135,7 @@ export class LessonHandler {
 
       const diff = DateUtil.diffDayBetween(originDate, targetDate);
       const copies = lessons.map((it) => ({
+        teacherId: it.teacherId,
         studentId: it.studentId,
         taughtDate: DateUtil.dayAfter(it.taughtDate, diff),
         startTime: it.startTime,
