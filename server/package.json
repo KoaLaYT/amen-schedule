@@ -8,7 +8,7 @@
     "test:integration": "docker compose -f docker-compose.test.yaml up -d && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest -i -c jest.config.integration.js && docker compose -f docker-compose.test.yaml down",
     "build": "prisma generate && tsc",
     "dev": "NODE_ENV=development ./wait-for-it.sh postgres:5432 -- npx nodemon --ignore __test__/ --watch src -e ts --exec npx ts-node src/main.ts",
-    "start": "./wait-for-it.sh postgres:5432 -- prisma migrate deploy && node dist/main.js"
+    "start": "./wait-for-it.sh postgres:5432 -- node dist/main.js"
   },
   "author": "",
   "license": "ISC",
