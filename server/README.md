@@ -18,6 +18,10 @@ docker exec -it amen-schedule-server-1 sh
 npx prisma migrate reset
 ```
 
+## Deploy
+
+run Makefile, then login into server do deploy
+
 ## Let's encrypt with docker
 
 This [tutorial](https://www.programonaut.com/setup-ssl-with-docker-nginx-and-lets-encrypt/) walk through a full configuration.

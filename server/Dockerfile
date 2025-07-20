@@ -1,4 +1,7 @@
-FROM node:16.17.0
+FROM node:18-slim
+RUN apt-get update && \
+    apt-get install -y openssl && \
+    apt-get clean
 
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
 
