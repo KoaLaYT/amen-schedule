@@ -5,27 +5,17 @@
 To run in develop mode:
 
 ```bash
-docker compose -f docker-compose.dev.yaml up
+docker compose -f docker-compose.dev.yaml up --build
 ```
 
-## Build
+And then need to sync the database
 
 ```bash
-# build image
-docker build -t koalayt/amen-schedule-api:latest -t koalayt/amen-schedule-api:1.0.0 .
-docker build -t koalayt/amen-schedule-nginx:latest -t koalayt/amen-schedule-nginx:1.0.0 ./nginx
-# push to docker hub
-docker push -a koalayt/amen-schedule-api
-docker push -a koalayt/amen-schedule-nginx
-```
+# login into dev server
+docker exec -it amen-schedule-server-1 sh
 
-## Push to remote server
-
-```bash
-scp -r docker-compose.yaml root@amen-alivps:/home
-ssh amen-alivps
-cd /home
-docker compose up -d
+# run prisma migrate
+npx prisma migrate reset
 ```
 
 ## Let's encrypt with docker
