@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vant/touch-emulator": "^1.4.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.6",
     "pinia": "^2.0.24",
